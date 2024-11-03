@@ -5,6 +5,7 @@ const path = require('path');
 const clientPath = path.join(__dirname, '../client');
 const viralAgendaRouter = require("./routers/viralAgendaRouter");
 const agendaCulturalPortoRouter = require("./routers/agendaCulturalPortoRouter");
+const othersRouter = require("./routers/othersRouter");
 
 const corsOptions = {
   origin: true,
@@ -14,6 +15,7 @@ app.use(cors(corsOptions));
 app.use(express.static(clientPath));
 app.use(viralAgendaRouter);
 app.use(agendaCulturalPortoRouter);
+app.use(othersRouter);
 
 app.get("/", (req, res) => {
   res.sendFile(`${clientPath}/index.html`)

@@ -49,8 +49,8 @@ loc.addEventListener("change", () => {
 provider.addEventListener("change", () => {
   currentProvider = provider.value;
 
-  currentProvider === "agenda-cultural-porto" ? selectedDate.setAttribute("disabled", "") : selectedDate.removeAttribute("disabled");
-  currentProvider === "agenda-cultural-porto" ? loc.setAttribute("disabled", "") : loc.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" || currentProvider === "others" ? selectedDate.setAttribute("disabled", "") : selectedDate.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" || currentProvider === "others" ? loc.setAttribute("disabled", "") : loc.removeAttribute("disabled");
 
   endpoint = currentProvider;
 });
@@ -78,7 +78,7 @@ const handleApiRequestClick = async (page) => {
   searchBtn.setAttribute("disabled", "");
   searchBtn.innerHTML = "Loading...";
   await makeApiRequest(page);
-  currentProvider === "agenda-cultural-porto" ? nextBtn.setAttribute("disabled", "") : nextBtn.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" || currentProvider === "others" ? nextBtn.setAttribute("disabled", "") : nextBtn.removeAttribute("disabled");
   currentProvider === "viral-agenda" && page > 1 ? prevBtn.removeAttribute("disabled") : prevBtn.setAttribute("disabled", "");
   searchBtn.removeAttribute("disabled", "");
   searchBtn.innerHTML = "Search";
@@ -91,7 +91,8 @@ const makeApiRequest = async (page) => {
 
     let req;
 
-    currentProvider === "viral-agenda" ? req = await fetch(viralRequestUrl) : req = await fetch(genericRequestUrl);
+    if (currentProvider === "viral-agenda") req = await fetch(viralRequestUrl);
+    if (currentProvider === "agenda-cultural-porto" || currentProvider === "others") req = await fetch(genericRequestUrl);
 
     container.innerHTML = "";
 
