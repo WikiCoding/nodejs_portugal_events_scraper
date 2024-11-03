@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Events in Portugal</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <form>
+          <div class="container">
+            <label for="location">Select a district: </label>
+            <select id="location">
+              <option selected="">Please Select</option>
+            </select>
+          </div>
+          <div class="container">
+            <label for="calendar">For date: </label>
+            <input type="date" id="calendar" />
+          </div>
+          <div class="container">
+            <button id="search-btn">Search</button>
+          </div>
+        </form>
+        <hr />
+      </div>
+    </div>
+    <div id="items" class="container">No data for the moment...</div>
+    <div class="container">
+      <button id="next-btn" disabled>Next Page</button>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>
