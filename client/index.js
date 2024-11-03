@@ -13,7 +13,8 @@ const dummyData = [
   }
 ]
 
-const baseUrl = "http://localhost:3000";
+// const baseUrl = "http://localhost:3000";
+const baseUrl = "https://portugal-events.onrender.com";
 const apiVersion = "api/v1";
 const endpoint = "events";
 
