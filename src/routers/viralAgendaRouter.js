@@ -1,22 +1,8 @@
 const express = require("express");
-const app = express();
+const router = new express.Router();
 const baseUrl = "https://www.viralagenda.com" // each element is a page, default number of elements loaded is 20
-const cors = require("cors");
-const path = require('path');
-const clientPath = path.join(__dirname, './client');
 
-const corsOptions = {
-  origin: true,
-}
-
-app.use(cors(corsOptions));
-app.use(express.static(clientPath));
-
-app.get("/", (req, res) => {
-  res.sendFile(`${clientPath}/index.html`)
-});
-
-app.get("/api/v1/events", async (req, res) => {
+router.get("/api/v1/events", async (req, res) => {
   if (isNaN(Date.parse(req.query.date))) {
     return res.status(400).send({ message: "Couldn't parse date" });
   }
@@ -47,7 +33,7 @@ app.get("/api/v1/events", async (req, res) => {
   const dataUrlsRegex = /data-url="([^"]*)"/g;
   const resultingData = data.match(regex).map(el => el.split('<meta itemprop="description" content="')[1].split('">')[0]);
 
-  const dataUrls = [...data.matchAll(dataUrlsRegex)].map(match => "https://www.viralagenda.com" + match[1]);
+  const dataUrls = [...data.matchAll(dataUrlsRegex)].map(match => baseUrl + match[1]);
   const eventHours = [...data.matchAll(hoursRegex)].map(match => match[1]);
 
   let foundEvents = [];
@@ -85,6 +71,4 @@ const formatDate = (date) => {
   return `${day}-${month}-${year}`;
 }
 
-app.listen(process.env.PORT, () => {
-  console.log(`server listening on port ${process.env.PORT}`);
-})
+module.exports = router;

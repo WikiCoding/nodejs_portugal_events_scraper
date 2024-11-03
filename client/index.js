@@ -16,11 +16,12 @@ const dummyData = [
 // const baseUrl = "http://localhost:3000";
 const baseUrl = "https://portugal-events.onrender.com";
 const apiVersion = "api/v1";
-const endpoint = "events";
+let endpoint = "events";
 
 const portugalDistricts = ["porto", "lisboa", "coimbra", "acores", "aveiro", "beja", "braga", "braganca", "castelo-branco", "evora", "faro", "guarda", "leiria", "madeira", "portalegre", "santarem", "setubal", "viana-do-castelo", "vila-real", "viseu"];
 
 const loc = document.getElementById("location");
+const provider = document.getElementById("provider");
 const selectedDate = document.getElementById("calendar");
 const searchBtn = document.getElementById("search-btn");
 const container = document.getElementById("items");
@@ -29,6 +30,7 @@ const prevBtn = document.getElementById("prev-btn");
 
 let currentLocation = "porto";
 let page = 1;
+let currentProvider = "viral-agenda";
 
 document.addEventListener("DOMContentLoaded", () => {
   portugalDistricts.forEach(el => {
@@ -44,10 +46,20 @@ loc.addEventListener("change", () => {
   currentLocation = loc.value;
 });
 
+provider.addEventListener("change", () => {
+  currentProvider = provider.value;
+
+  currentProvider === "agenda-cultural-porto" ? selectedDate.setAttribute("disabled", "") : selectedDate.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" ? loc.setAttribute("disabled", "") : loc.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" ? endpoint = "events-porto" : endpoint = "events";
+});
+
 searchBtn.addEventListener("click", async (e) => {
   e.preventDefault();
 
   nextBtn.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" ? nextBtn.setAttribute("disabled", "") : nextBtn.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" ? prevBtn.setAttribute("disabled", "") : prevBtn.removeAttribute("disabled");
 
   await makeApiRequest(page);
 });
@@ -56,6 +68,8 @@ nextBtn.addEventListener("click", async () => {
   page = page + 1;
 
   prevBtn.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" ? nextBtn.setAttribute("disabled", "") : nextBtn.removeAttribute("disabled");
+  currentProvider === "agenda-cultural-porto" ? prevBtn.setAttribute("disabled", "") : prevBtn.removeAttribute("disabled");
   await makeApiRequest(page);
 });
 
@@ -68,7 +82,15 @@ prevBtn.addEventListener("click", async () => {
 
 const makeApiRequest = async (page) => {
   try {
-    const req = await fetch(`${baseUrl}/${apiVersion}/${endpoint}?location=${currentLocation}&date=${selectedDate.value}&page=${page}`);
+    const viralRequestUrl = `${baseUrl}/${apiVersion}/${endpoint}?location=${currentLocation}&date=${selectedDate.value}&page=${page}`;
+    const agendaCulturalRequestUrl = `${baseUrl}/${apiVersion}/${endpoint}`;
+
+    let req;
+
+    console.log(currentProvider)
+    currentProvider === "viral-agenda" ? req = await fetch(viralRequestUrl) : req = await fetch(agendaCulturalRequestUrl);
+
+    // const req = await fetch(`${baseUrl}/${apiVersion}/${endpoint}?location=${currentLocation}&date=${selectedDate.value}&page=${page}`);
 
     container.innerHTML = "";
 
