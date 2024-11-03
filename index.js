@@ -10,6 +10,7 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));
+app.use(express.static(clientPath));
 
 app.get("/", (req, res) => {
   res.sendFile(`${clientPath}/index.html`)
