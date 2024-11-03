@@ -2,7 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const baseUrl = "https://www.viralagenda.com" // each element is a page, default number of elements loaded is 20
 
-router.get("/api/v1/events", async (req, res) => {
+router.get("/api/v1/events/viral-agenda", async (req, res) => {
   if (isNaN(Date.parse(req.query.date))) {
     return res.status(400).send({ message: "Couldn't parse date" });
   }

@@ -15,8 +15,8 @@ const dummyData = [
 
 // const baseUrl = "http://localhost:3000";
 const baseUrl = "https://portugal-events.onrender.com";
-const apiVersion = "api/v1";
-let endpoint = "events";
+const apiVersion = "api/v1/events";
+let endpoint = "viral-agenda";
 
 const portugalDistricts = ["porto", "lisboa", "coimbra", "acores", "aveiro", "beja", "braga", "braganca", "castelo-branco", "evora", "faro", "guarda", "leiria", "madeira", "portalegre", "santarem", "setubal", "viana-do-castelo", "vila-real", "viseu"];
 
@@ -51,46 +51,47 @@ provider.addEventListener("change", () => {
 
   currentProvider === "agenda-cultural-porto" ? selectedDate.setAttribute("disabled", "") : selectedDate.removeAttribute("disabled");
   currentProvider === "agenda-cultural-porto" ? loc.setAttribute("disabled", "") : loc.removeAttribute("disabled");
-  currentProvider === "agenda-cultural-porto" ? endpoint = "events-porto" : endpoint = "events";
+
+  endpoint = currentProvider;
 });
 
 searchBtn.addEventListener("click", async (e) => {
   e.preventDefault();
 
-  nextBtn.removeAttribute("disabled");
-  currentProvider === "agenda-cultural-porto" ? nextBtn.setAttribute("disabled", "") : nextBtn.removeAttribute("disabled");
-  currentProvider === "agenda-cultural-porto" ? prevBtn.setAttribute("disabled", "") : prevBtn.removeAttribute("disabled");
-
-  await makeApiRequest(page);
+  await handleApiRequestClick(page);
 });
 
 nextBtn.addEventListener("click", async () => {
   page = page + 1;
 
-  prevBtn.removeAttribute("disabled");
-  currentProvider === "agenda-cultural-porto" ? nextBtn.setAttribute("disabled", "") : nextBtn.removeAttribute("disabled");
-  currentProvider === "agenda-cultural-porto" ? prevBtn.setAttribute("disabled", "") : prevBtn.removeAttribute("disabled");
-  await makeApiRequest(page);
+  await handleApiRequestClick(page);
 });
 
 prevBtn.addEventListener("click", async () => {
   if (page > 1) {
     page = page - 1;
-    await makeApiRequest(page);
+    await handleApiRequestClick(page);
   }
 });
+
+const handleApiRequestClick = async (page) => {
+  searchBtn.setAttribute("disabled", "");
+  searchBtn.innerHTML = "Loading...";
+  await makeApiRequest(page);
+  currentProvider === "agenda-cultural-porto" ? nextBtn.setAttribute("disabled", "") : nextBtn.removeAttribute("disabled");
+  currentProvider === "viral-agenda" && page > 1 ? prevBtn.removeAttribute("disabled") : prevBtn.setAttribute("disabled", "");
+  searchBtn.removeAttribute("disabled", "");
+  searchBtn.innerHTML = "Search";
+}
 
 const makeApiRequest = async (page) => {
   try {
     const viralRequestUrl = `${baseUrl}/${apiVersion}/${endpoint}?location=${currentLocation}&date=${selectedDate.value}&page=${page}`;
-    const agendaCulturalRequestUrl = `${baseUrl}/${apiVersion}/${endpoint}`;
+    const genericRequestUrl = `${baseUrl}/${apiVersion}/${endpoint}`;
 
     let req;
 
-    console.log(currentProvider)
-    currentProvider === "viral-agenda" ? req = await fetch(viralRequestUrl) : req = await fetch(agendaCulturalRequestUrl);
-
-    // const req = await fetch(`${baseUrl}/${apiVersion}/${endpoint}?location=${currentLocation}&date=${selectedDate.value}&page=${page}`);
+    currentProvider === "viral-agenda" ? req = await fetch(viralRequestUrl) : req = await fetch(genericRequestUrl);
 
     container.innerHTML = "";
 

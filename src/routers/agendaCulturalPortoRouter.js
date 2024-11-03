@@ -1,7 +1,7 @@
 const express = require("express");
 const router = new express.Router();
 
-router.get("/api/v1/events-porto", async (req, res) => {
+router.get("/api/v1/events/agenda-cultural-porto", async (req, res) => {
   const requestUrl = "https://agendaculturalporto.org/eventos-hoje-no-norte/";
 
   let date;
