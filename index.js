@@ -2,12 +2,18 @@ const express = require("express");
 const app = express();
 const baseUrl = "https://www.viralagenda.com" // each element is a page, default number of elements loaded is 20
 const cors = require("cors");
+const path = require('path');
+const clientPath = path.join(__dirname, './client');
 
 const corsOptions = {
   origin: true,
 }
 
 app.use(cors(corsOptions));
+
+app.get("/", (req, res) => {
+  res.sendFile(`${clientPath}/index.html`)
+});
 
 app.get("/api/v1/events", async (req, res) => {
   if (isNaN(Date.parse(req.query.date))) {
