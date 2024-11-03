@@ -38,13 +38,17 @@ app.get("/api/v1/events", async (req, res) => {
   const response = await fetch(requestUrl);
 
   const data = await response.text();
+  // console.log(data)
 
   console.log("Received response with status", response.status);
 
   const regex = /<meta\s+itemprop="description"\s+content="([^"]*)"\s*\/?>/g;
+  const hoursRegex = /<div class="viral-event-hour">(.*?)<\/div>/g;
+  const dataUrlsRegex = /data-url="([^"]*)"/g;
   const resultingData = data.match(regex).map(el => el.split('<meta itemprop="description" content="')[1].split('">')[0]);
 
-  const dataUrls = [...data.matchAll(/data-url="([^"]*)"/g)].map(match => "https://www.viralagenda.com" + match[1]);
+  const dataUrls = [...data.matchAll(dataUrlsRegex)].map(match => "https://www.viralagenda.com" + match[1]);
+  const eventHours = [...data.matchAll(hoursRegex)].map(match => match[1]);
 
   let foundEvents = [];
 
@@ -52,8 +56,9 @@ app.get("/api/v1/events", async (req, res) => {
     const name = resultingData[i].split(" | ")[0].split(" @ ")[0];
     const location = resultingData[i].split(" @ ")[1].split(" | ")[0];
     const eventDate = new Date(Date.parse(resultingData[i].split(" | ")[1]));
+    const eventHour = eventHours[i];
 
-    const evnt = { url: dataUrls[i], name, location, date: eventDate }
+    const evnt = { url: dataUrls[i], name, location, date: eventDate, eventHour }
 
     if (eventDate.toString() === new Date(Date.parse(date)).toString()) foundEvents = [...foundEvents, evnt]
   }

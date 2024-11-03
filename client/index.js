@@ -25,6 +25,7 @@ const selectedDate = document.getElementById("calendar");
 const searchBtn = document.getElementById("search-btn");
 const container = document.getElementById("items");
 const nextBtn = document.getElementById("next-btn");
+const prevBtn = document.getElementById("prev-btn");
 
 let currentLocation = "porto";
 let page = 1;
@@ -46,13 +47,24 @@ loc.addEventListener("change", () => {
 searchBtn.addEventListener("click", async (e) => {
   e.preventDefault();
 
+  nextBtn.removeAttribute("disabled");
+
   await makeApiRequest(page);
 });
 
 nextBtn.addEventListener("click", async () => {
   page = page + 1;
+
+  prevBtn.removeAttribute("disabled");
   await makeApiRequest(page);
-})
+});
+
+prevBtn.addEventListener("click", async () => {
+  if (page > 1) {
+    page = page - 1;
+    await makeApiRequest(page);
+  }
+});
 
 const makeApiRequest = async (page) => {
   try {
@@ -70,40 +82,47 @@ const makeApiRequest = async (page) => {
     // DUMMY DATA FOR DEV
 
     const eventHeader = document.createElement("h3");
-    eventHeader.innerHTML = `Seeing page ${currentPage} of events from ${location} on ${date}`
+    eventHeader.innerHTML = `Seeing page ${currentPage + 1} of events from ${location} on ${date}`
 
-    container.appendChild(eventHeader)
+    container.appendChild(eventHeader);
+
+    if (page === 1) prevBtn.setAttribute("disabled", "");
 
     renderItems(events);
-
-    if (numberElements === 20) {
-      nextBtn.removeAttribute("disabled");
-    } else {
-      nextBtn.setAttribute("disabled", "");
-    }
   } catch (ex) {
     alert(ex);
   }
 }
 
 const renderItems = (events) => {
-  events.forEach(el => {
+  if (events.length === 0) {
     const div = document.createElement("div");
-    const linkEvent = document.createElement("a");
-    const locationDiv = document.createElement("div");
-    const eventLocation = document.createElement("a");
 
-    div.classList.add("container");
-    div.classList.add("card");
-
-    linkEvent.innerHTML = el.name;
-    linkEvent.href = el.url;
-    eventLocation.innerHTML = el.location;
-
-    locationDiv.appendChild(eventLocation);
-    div.appendChild(linkEvent);
-    div.appendChild(locationDiv);
+    div.innerHTML = "No events loaded on this page."
 
     container.appendChild(div);
-  });
+  } else {
+    events.forEach(el => {
+      const div = document.createElement("div");
+      const linkEvent = document.createElement("a");
+      const locationDiv = document.createElement("div");
+      const eventLocation = document.createElement("a");
+      const eventHour = document.createElement("div");
+
+      div.classList.add("container");
+      div.classList.add("card");
+
+      linkEvent.innerHTML = el.name;
+      linkEvent.href = el.url;
+      eventLocation.innerHTML = el.location;
+      eventHour.innerHTML = el.eventHour;
+
+      locationDiv.appendChild(eventLocation);
+      div.appendChild(eventHour);
+      div.appendChild(linkEvent);
+      div.appendChild(locationDiv);
+
+      container.appendChild(div);
+    });
+  }
 };
